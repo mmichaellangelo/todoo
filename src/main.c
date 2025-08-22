@@ -64,10 +64,24 @@ int handle_command(char c[]) {
 
 /**
  * Saves todo list data to file
+ * FORMAT: #*uncompleted1*uncompleted2...#*completed1*completed2...
  * @param path path to file to save
  */
 void save_file(const char *path) {
-    filepath = strdup(path);
+    FILE *f = fopen(path, "w");
+    fprintf(f, "#");
+    node_t *current = uncompleted;
+    while (current != NULL) {
+        fprintf(f, "*%s", current->data);
+        current = current->next;
+    }
+    fprintf(f, "#");
+    current = completed;
+    while (current != NULL) {
+        fprintf(f, "*%s", current->data);
+        current = current->next;
+    }
+    fclose(f);
 }
 
 /**
@@ -75,7 +89,11 @@ void save_file(const char *path) {
  * @param path path to file to load
  */
 void load_file(char* path) {
-    filepath = strdup(path);
+    FILE *f = fopen(path, "r");
+    char buf[100];
+    fgets(buf, sizeof(buf), f);
+    fclose(f);
+    
 }
 
 
@@ -84,6 +102,7 @@ void load_file(char* path) {
  * @return exit code
  */
 int main() {
+    // load_file("todos.txt");
     for (;;) {
         system("clear"); // Clear screen
         printf("<< TODOO %s >>\n", get_date_string()); // Print header
@@ -99,9 +118,13 @@ int main() {
         char input[64];
         printf("> ");
         fgets(input, sizeof(input), stdin);
+        
         if (handle_command(input) == 0) {
+            save_file("todos.txt");
             break;
         }
+        save_file("todos.txt");
     }
+    return 0;
 }
 

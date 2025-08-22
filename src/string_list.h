@@ -36,4 +36,4 @@ char* list_remove(node_t **list, int idx);
 void list_print(const node_t *head, enum list_style style);
 
 
-#endif //LIST_H
+#endif
